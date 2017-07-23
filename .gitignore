@@ -1,4 +1,5 @@
 .DS_Store
 *~
+*.png
 MNIST_data
 
