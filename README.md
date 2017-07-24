@@ -8,6 +8,10 @@
 - MNIST Classification using Stacked Autoencoders + Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.py)
 - MNIST Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_convolutional_neural_networks.py)
 
+## Week2 - Convolutional Neural Networks(CNNs)
+- CIFAR-10 Image Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/cifar10)
+
+
 ## Week4 - Natural Language Processing(NLP) QA & Visual QA
 - Visual QA [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow)
 
