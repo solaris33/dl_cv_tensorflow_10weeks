@@ -1,5 +1,6 @@
 .DS_Store
 *~
 *.png
+*.pyc
 MNIST_data
 
