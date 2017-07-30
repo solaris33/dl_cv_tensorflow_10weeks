@@ -12,6 +12,9 @@
 - CIFAR-10 Image Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/cifar10)
 - Custom Dataset Image Classification using Inception v3 Retraining(Fine-Tuning) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/inception_v3_retraining)
 
+## Week3 - Recurrent Neural Networks(RNNs)
+- Character-level Language Modeling using Recurrent Neural Networks(RNNs)[(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
+
 ## Week4 - Natural Language Processing(NLP) QA & Visual QA
 - Visual QA [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow)
 
