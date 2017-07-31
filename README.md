@@ -17,7 +17,7 @@
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb)
 
 ## Week4 - Natural Language Processing(NLP) QA & Visual QA
-- Visual QA - <Exploring Models and Data for Image Question Answering> Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow)
+- Visual QA - Exploring Models and Data for Image Question Answering Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow)
 
 
 # References
