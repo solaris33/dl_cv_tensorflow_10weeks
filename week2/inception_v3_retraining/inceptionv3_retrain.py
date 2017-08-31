@@ -632,7 +632,7 @@ def variable_summaries(var):
     tf.summary.scalar('min', tf.reduce_min(var))
     tf.summary.histogram('histogram', var)
 
-
+## 여기서 새로운 FC를 붙인다.
 def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
   """Adds a new softmax and fully-connected layer for training.
   We need to retrain the top layer to identify our new classes, so this function
@@ -713,14 +713,14 @@ def add_evaluation_step(result_tensor, ground_truth_tensor):
   tf.summary.scalar('accuracy', evaluation_step)
   return evaluation_step, prediction
 
-
+## 처음에 시작되는 부분.
 def main(_):
   # TensorBoard의 summaries를 write할 directory를 설정한다.
   if tf.gfile.Exists(FLAGS.summaries_dir):
     tf.gfile.DeleteRecursively(FLAGS.summaries_dir)
   tf.gfile.MakeDirs(FLAGS.summaries_dir)
 
-  # pre-trained graph를 생성한다.
+  # pre-trained graph를 생성한다. (인셉션을 다운받는다)
   maybe_download_and_extract()
   graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (
       create_inception_graph())
@@ -738,6 +738,9 @@ def main(_):
     return -1
 
   # 커맨드라인 flag에 distortion에 관련된 설정이 있으면 distortion들을 적용한다.
+  ## 디스토션을 일일히 해주냐 api가 해주냐?
+  ## 구글에서 제공한 모듈화된 펑션을 통해서 함수 한줄로 지정할 수 있다.
+  ## 불리언 값을 받아다가 처리한다.
   do_distort_images = should_distort_images(
       FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale,
       FLAGS.random_brightness)
@@ -758,6 +761,7 @@ def main(_):
                         bottleneck_tensor)
 
     # 우리가 학습시킬(training) 새로운 layer를 추가한다.
+    ## 여기가 마지막 FC를 새로 정의하는 부분임.
     (train_step, cross_entropy, bottleneck_input, ground_truth_input,
      final_tensor) = add_final_training_ops(len(image_lists.keys()),
                                             FLAGS.final_tensor_name,
@@ -965,6 +969,9 @@ if __name__ == '__main__':
       imagenet_2012_challenge_label_map_proto.pbtxt.\
       """
   )
+  ## bottleneck이 왜 들어갈까?
+  ## Final layer 전까지는 다 프리즈되어있으므로 다 같은 값이 출력되어야 함
+  ## 따라서 bottleneck을 만들어서 액티베이션값만 저장해두는 형식으로 코드의 효율성을 높임
   parser.add_argument(
       '--bottleneck_dir',
       type=str,
