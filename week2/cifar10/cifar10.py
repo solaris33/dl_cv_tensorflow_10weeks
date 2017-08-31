@@ -184,7 +184,7 @@ def inputs(eval_data):
     labels = tf.cast(labels, tf.float16)
   return images, labels
 
-
+## 모델.
 def inference(images):
   """Build the CIFAR-10 model.
 
@@ -237,6 +237,9 @@ def inference(images):
   pool2 = tf.nn.max_pool(norm2, ksize=[1, 3, 3, 1],
                          strides=[1, 2, 2, 1], padding='SAME', name='pool2')
 
+  ## 일반적인 상황에서는 풀링 다음 노멀라이즈 한다. 여기서는 트릭으로 뒤바꿔놓은 듯.
+  
+  
   # local3
   with tf.variable_scope('local3') as scope:
     # Move everything into depth so we can perform a single matrix multiply.
@@ -270,7 +273,7 @@ def inference(images):
 
   return softmax_linear
 
-
+## 코스트 펑션 정의.
 def loss(logits, labels):
   """Add L2Loss to all the trainable variables.
 
@@ -285,6 +288,7 @@ def loss(logits, labels):
   """
   # Calculate the average cross entropy loss across the batch.
   labels = tf.cast(labels, tf.int64)
+  ## sparse_softmax => more advanced.
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
       labels=labels, logits=logits, name='cross_entropy_per_example')
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
@@ -339,6 +343,7 @@ def train(total_loss, global_step):
   num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / FLAGS.batch_size
   decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
 
+  ## learning rate decay
   # Decay the learning rate exponentially based on the number of steps.
   lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
                                   global_step,
@@ -367,6 +372,7 @@ def train(total_loss, global_step):
     if grad is not None:
       tf.summary.histogram(var.op.name + '/gradients', grad)
 
+  ## exponentialMovingAverage!!
   # Track the moving averages of all trainable variables.
   variable_averages = tf.train.ExponentialMovingAverage(
       MOVING_AVERAGE_DECAY, global_step)
