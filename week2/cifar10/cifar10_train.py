@@ -66,6 +66,10 @@ def train():
     # Get images and labels for CIFAR-10.
     # Force input pipeline to CPU:0 to avoid operations sometimes ending up on
     # GPU and resulting in a slow down.
+    ## 이미지와 레이블을 가져오는데, 디스토트할지 말지 결정할 수 있다.
+    ## 0번째 cpu에서 하는데
+    ## 그 이유는 GPU랑 같이 쓸때는 
+    ## 데이터 읽어들이는 덜 중요한 것은 cpu이용하자는 것.
     with tf.device('/cpu:0'):
       images, labels = cifar10.distorted_inputs()
 
@@ -80,6 +84,12 @@ def train():
     # updates the model parameters.
     train_op = cifar10.train(loss, global_step)
 
+    ## 로저훅. 텐서플로우 많이 해봐야 아는데
+    ## 이걸 쓰면 한스텝 지날때마다 그 값을 지정할 수 있는 코드임.
+    ## begin, before_run, after_run
+    ## begin: 처음 에폭 시작할때 진입하는 부분. -1에서 시작. 스타트타임 잡고
+    ## before_run: 한스텝 업뎃하고.. 
+    ## after_run: 커런트 타임 저장하고 한 에폭 도는데 얼마나 걸렸나 측정.
     class _LoggerHook(tf.train.SessionRunHook):
       """Logs loss and runtime."""
 
@@ -106,6 +116,17 @@ def train():
           print (format_str % (datetime.now(), self._step, loss_value,
                                examples_per_sec, sec_per_batch))
 
+    ## 확장된 형태의 세션
+    ## 로저 훅 지정한 것을..
+    ## 훅에 인풋으로 넣어줘서.. 
+    ## NaNTensorHook은 컴터 연산과정에서 불가능한 값이 나오는  0으로 나누는.
+    ## loss 할때 그런게 나오면 바로 스탑하겠다라는 것.
+    ## 이걸 사용하는 이유는 그냥 세션 썼는데 
+    ## 모니터링 세션 쓰면 중간중간에 로그 찍을 수 잇고.
+    ## 발전된 형태임 우왕 글쿠나.
+    ## 맥스스텝에 도달하면 정지하겠다.
+    ## ConfigProto가 트루라면 모든 연산이 어떤 cpu, gpu에서 도는지 확인할 수 있다.
+    ## 혹시 그럼 프로덕션 환경에서는 끄는 걸까? 굳이 안그래도 된다고 함. NaN처리 같은거 더 효율적. 로저 훅도 그렇고.
     with tf.train.MonitoredTrainingSession(
         checkpoint_dir=FLAGS.train_dir,
         hooks=[tf.train.StopAtStepHook(last_step=FLAGS.max_steps),
@@ -118,10 +139,12 @@ def train():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
+  ## 없으면 다운로드
   cifar10.maybe_download_and_extract()
   if tf.gfile.Exists(FLAGS.train_dir):
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
   tf.gfile.MakeDirs(FLAGS.train_dir)
+  ## 학습시작.
   train()
 
 
