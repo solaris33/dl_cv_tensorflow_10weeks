@@ -90,7 +90,7 @@ class Vis_lstm_model:
 		lstm_output = self.forward_pass_lstm(word_embeddings)
 		lstm_answer = lstm_output[-1]
 		logits = tf.matmul(lstm_answer, self.ans_sm_W) + self.ans_sm_b
-		ce = tf.nn.softmax_cross_entropy_with_logits(logits, answer, name = 'ce')
+		ce = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=answer, name = 'ce')
 		answer_probab = tf.nn.softmax(logits, name='answer_probab')
 		
 		predictions = tf.argmax(answer_probab,1)
