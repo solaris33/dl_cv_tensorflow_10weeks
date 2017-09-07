@@ -82,7 +82,7 @@ class PTBModel(object):
 
     batch_size = input_.batch_size
     num_steps = input_.num_steps
-    size = config.hidden_size
+    size = config.hidden_size #rnn 노드 갯수
     vocab_size = config.vocab_size
 
     # Slightly better results can be obtained with forget gate biases
@@ -93,6 +93,9 @@ class PTBModel(object):
       # the BasicLSTMCell will need a reuse parameter which is unfortunately not
       # defined in TensorFlow 1.0. To maintain backwards compatibility, we add
       # an argument check here:
+      ## 트릭: reuse
+      ## reuse가 포함되어있거나/아니거나.
+      ## 예전에는 이런 형태로 구성했는데 최근에는 4번째 argument에 reuse를 넣을 수 있어서
       if 'reuse' in inspect.getargspec(
           tf.contrib.rnn.BasicLSTMCell.__init__).args:
         return tf.contrib.rnn.BasicLSTMCell(
@@ -101,16 +104,25 @@ class PTBModel(object):
       else:
         return tf.contrib.rnn.BasicLSTMCell(
             size, forget_bias=0.0, state_is_tuple=True)
+    
     attn_cell = lstm_cell
     if is_training and config.keep_prob < 1:
+      ## 테스트에서는 보통 드랍아웃을 쓰지 않음.
       def attn_cell():
         return tf.contrib.rnn.DropoutWrapper(
             lstm_cell(), output_keep_prob=config.keep_prob)
     cell = tf.contrib.rnn.MultiRNNCell(
+        ## 여러 층을 쌓는다.
+        ## state_is_tuple은, LSTM에 h와 c가 나오므로,
+        ## [[1,2],[3,4]]를 구분하는 형태
+        ## False로 되면 [1,2,3,4]가 됨.
+        ## 요새 디폴트는 True
         [attn_cell() for _ in range(config.num_layers)], state_is_tuple=True)
-
+    
+    ## 보통 최근에는 0으로 지정하고 시작함
     self._initial_state = cell.zero_state(batch_size, data_type())
 
+    ## Embedding Matrix를 정의하는 부분
     with tf.device("/cpu:0"):
       embedding = tf.get_variable(
           "embedding", [vocab_size, size], dtype=data_type())
@@ -136,6 +148,7 @@ class PTBModel(object):
         (cell_output, state) = cell(inputs[:, time_step, :], state)
         outputs.append(cell_output)
 
+    ## 데이터를 3차원으로 다시 reshape한다.
     output = tf.reshape(tf.stack(axis=1, values=outputs), [-1, size])
     softmax_w = tf.get_variable(
         "softmax_w", [size, vocab_size], dtype=data_type())
@@ -145,17 +158,18 @@ class PTBModel(object):
     # Reshape logits to be 3-D tensor for sequence loss
     logits = tf.reshape(logits, [batch_size, num_steps, vocab_size])
 
+    ## 일반적인 loss 펑션 대신, sequence_loss로 구축.
     # use the contrib sequence loss and average over the batches
     loss = tf.contrib.seq2seq.sequence_loss(
         logits,
         input_.targets,
-        tf.ones([batch_size, num_steps], dtype=data_type()),
+        tf.ones([batch_size, num_steps], dtype=data_type()), ## 모든 배치가 똑같은 중요도를 갖도록 하기 위해 ones로.
         average_across_timesteps=False,
-        average_across_batch=True
+        average_across_batch=True ## 배치만큼을 다 썸 해줘서 2차원으로 만드는 트릭
     )
 
     # update the cost variables
-    self._cost = cost = tf.reduce_sum(loss)
+    self._cost = cost = tf.reduce_sum(loss) ## 모두 썸해서 하나의 스칼라값으로.
     self._final_state = state
 
     if not is_training:
@@ -177,6 +191,7 @@ class PTBModel(object):
   def assign_lr(self, session, lr_value):
     session.run(self._lr_update, feed_dict={self._new_lr: lr_value})
 
+  ## state값을 리턴해주는 get함수들.
   @property
   def input(self):
     return self._input
@@ -265,12 +280,13 @@ class TestConfig(object):
   batch_size = 20
   vocab_size = 10000
 
-
+## 에폭을 한 스텝마다 돌리는 부분
 def run_epoch(session, model, eval_op=None, verbose=False):
   """Runs the model on the given data."""
   start_time = time.time()
   costs = 0.0
   iters = 0
+  ## 이니셜 스테이트
   state = session.run(model.initial_state)
 
   fetches = {
@@ -282,6 +298,7 @@ def run_epoch(session, model, eval_op=None, verbose=False):
 
   for step in range(model.input.epoch_size):
     feed_dict = {}
+    ## RNN을 이용한 구현에서 이런 식으로 보통 씀.
     for i, (c, h) in enumerate(model.initial_state):
       feed_dict[c] = state[i].c
       feed_dict[h] = state[i].h
@@ -298,7 +315,7 @@ def run_epoch(session, model, eval_op=None, verbose=False):
             (step * 1.0 / model.input.epoch_size, np.exp(costs / iters),
              iters * model.input.batch_size / (time.time() - start_time)))
 
-  return np.exp(costs / iters)
+  return np.exp(costs / iters) ## 이게 퍼플렉시티
 
 
 def get_config():
@@ -315,21 +332,26 @@ def get_config():
 
 
 def main(_):
+  ## 데이터가 없다면 에러 출력
   if not FLAGS.data_path:
     raise ValueError("Must set --data_path to PTB data directory")
 
+  ## 데이터를 불러 들여서 데이터를 분리한다.
   raw_data = reader.ptb_raw_data(FLAGS.data_path)
   train_data, valid_data, test_data, _ = raw_data
 
+  ## 모델 사이즈 등 컨픽을 가져온다.
   config = get_config()
   eval_config = get_config()
-  eval_config.batch_size = 1
-  eval_config.num_steps = 1
+  eval_config.batch_size = 1 # 1개에 대해서만 eval하겠다.
+  eval_config.num_steps = 1 
 
+  ## W와 B를 초기화 한다.
   with tf.Graph().as_default():
     initializer = tf.random_uniform_initializer(-config.init_scale,
                                                 config.init_scale)
-
+    ## PTBInput에 Wrapper로 넣는다.
+    ## argument에 따라서 적절하게 구성하는 패키징.
     with tf.name_scope("Train"):
       train_input = PTBInput(config=config, data=train_data, name="TrainInput")
       with tf.variable_scope("Model", reuse=None, initializer=initializer):
@@ -349,9 +371,12 @@ def main(_):
         mtest = PTBModel(is_training=False, config=eval_config,
                          input_=test_input)
 
+    ## 기본적인 세션위에 수퍼바이저 세션을 이용하면 중간중간에 로그를 저장할 수 있다.
     sv = tf.train.Supervisor(logdir=FLAGS.save_path)
     with sv.managed_session() as session:
       for i in range(config.max_max_epoch):
+        ## learning_rate decay!
+        ## 에폭이 길어질수록 lr_decay가 커지겠지?
         lr_decay = config.lr_decay ** max(i + 1 - config.max_epoch, 0.0)
         m.assign_lr(session, config.learning_rate * lr_decay)
 
