@@ -23,5 +23,9 @@
 ## Week5 - Image Captioning
 - Image Captioning - *Show and Tell: A Neural Image Caption Generator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week5/im2txt)
 
+## Week6 - Neural Style Transfer
+- Neural Style Transfer - *A neural algorithm of artistic style* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week6/neural-style)
+
+
 # References
 [1] https://www.tensorflow.org/
