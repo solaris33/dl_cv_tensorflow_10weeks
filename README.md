@@ -26,6 +26,10 @@
 ## Week6 - Neural Style Transfer
 - Neural Style Transfer - *A neural algorithm of artistic style* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week6/neural-style)
 
+## Week7 - Autopilot
+- Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/research)
+
+
 
 # References
 [1] https://www.tensorflow.org/
