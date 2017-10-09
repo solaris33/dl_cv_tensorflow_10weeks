@@ -29,6 +29,8 @@
 ## Week7 - Autopilot
 - Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/research)
 
+## Week8 - Semantic Image Segmentation
+- Semantic Image Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week8/FCN.tensorflow)
 
 
 # References
