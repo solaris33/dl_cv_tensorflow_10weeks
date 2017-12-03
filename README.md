@@ -6,15 +6,16 @@
 - MNIST Reconstruction using Autoencoder [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_autoencoder_reconstruction.py)
 - MNIST Classification using Multi-Layer Perceptron(MLP) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_MLP.py)
 - MNIST Classification using Stacked Autoencoders + Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.py) [(Notebook)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.ipynb)
-- MNIST Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_convolutional_neural_networks.py)
 
 ## Week2 - Convolutional Neural Networks(CNNs)
+- MNIST Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week2/mnist_classification_with_convolutional_neural_networks.py)
 - CIFAR-10 Image Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/cifar10)
 - Custom Dataset Image Classification using Inception v3 Retraining(Fine-Tuning) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/inception_v3_retraining)
 
 ## Week3 - Recurrent Neural Networks(RNNs)
 - Character-level Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb)
+- Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb_word_lm_dynamic_rnn.py)
 
 ## Week4 - Natural Language Processing(NLP) QA & Visual QA
 - NLP QA - *End-To-End Memory Networks* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/MemNN)
