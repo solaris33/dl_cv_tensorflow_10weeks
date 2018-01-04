@@ -24,8 +24,10 @@
 ## Week5 - Image Captioning
 - Image Captioning - *Show and Tell: A Neural Image Caption Generator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week5/im2txt)
 
-## Week6 - Neural Style Transfer
+## Week6 - Neural Style Transfer & TensorBoard
 - Neural Style Transfer - *A neural algorithm of artistic style* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week6/neural-style)
+- Linear Regression with TensorBoard [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week6/linear_regression_with_tensorboard.py)
+- MNIST Classification with summaries for TensorBoard [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week6/mnist_with_summaries.py)
 
 ## Week7 - Autopilot
 - Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/research)
