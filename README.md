@@ -29,7 +29,9 @@
 - Linear Regression with TensorBoard [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week6/linear_regression_with_tensorboard.py)
 - MNIST Classification with summaries for TensorBoard [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week6/mnist_with_summaries.py)
 
-## Week7 - Autopilot
+## Week7 - Generative Model - Variational AutoEncoder(VAE) & Generative Adversarial Networks(GAN)
+- Variational AutoEncoder(VAE) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/VAE-TensorFlow)
+- Generative Adversarial Networks(GAN) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/GAN-TensorFlow)
 - Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/research)
 
 ## Week8 - Semantic Image Segmentation
