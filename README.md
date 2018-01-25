@@ -39,7 +39,7 @@
 ## Week9 - Semantic Image Segmentation
 - Semantic Image Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week9/FCN.tensorflow)
 
-## Week10 - Brain Tumor Segmentation & Generative Adversarial Networks(GAN)
+## Week10 - Brain Tumor Segmentation
 - Brain Tumor Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation for BRATS Dataset [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/FCN-BRATS)
 
 
