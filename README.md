@@ -4,7 +4,7 @@
 ## Week1 - Deep Learning Introduction
 - MNIST Classification using Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_softmax_classifier.py) [(Notebook)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_softmax_classifier.ipynb)
 - MNIST Reconstruction using Autoencoder [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_autoencoder_reconstruction.py)
-- MNIST Classification using Artificila Neural Networks(ABB) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_ANN.py)
+- MNIST Classification using Artificila Neural Networks(ANN) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_ANN.py)
 - MNIST Classification using Stacked Autoencoders + Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.py) [(Notebook)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.ipynb)
 
 ## Week2 - Convolutional Neural Networks(CNNs)
@@ -32,18 +32,15 @@
 ## Week7 - Generative Model - Variational AutoEncoder(VAE) & Generative Adversarial Networks(GAN)
 - Variational AutoEncoder(VAE) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/VAE-TensorFlow)
 - Generative Adversarial Networks(GAN) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/GAN-TensorFlow)
-- Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/research)
 
-## Week8 - Semantic Image Segmentation
-- Semantic Image Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week8/FCN.tensorflow)
+## Week8 - Autopilot
+- Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week8/research)
 
-## Week9 - Brain Tumor Segmentation & Generative Adversarial Networks(GAN)
-- Brain Tumor Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation for BRATS Dataset [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week9/FCN-BRATS)
+## Week9 - Semantic Image Segmentation
+- Semantic Image Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week9/FCN.tensorflow)
 
-- Generative Adversarial Networks(GAN) - *Generative Adversarial Networks* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week9/GAN-TensorFlow)
-
-## Week10 - TensorBoard
-- MNIST Classification with summaries for TensorBoard [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week10/mnist_with_summaries.py)
+## Week10 - Brain Tumor Segmentation & Generative Adversarial Networks(GAN)
+- Brain Tumor Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation for BRATS Dataset [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/FCN-BRATS)
 
 
 # References
