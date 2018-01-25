@@ -4,7 +4,7 @@
 ## Week1 - Deep Learning Introduction
 - MNIST Classification using Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_softmax_classifier.py) [(Notebook)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_softmax_classifier.ipynb)
 - MNIST Reconstruction using Autoencoder [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_autoencoder_reconstruction.py)
-- MNIST Classification using Artificila Neural Networks(ANN) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_ANN.py)
+- MNIST Classification using Artificial Neural Networks(ANN) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_ANN.py)
 - MNIST Classification using Stacked Autoencoders + Softmax Classifier [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.py) [(Notebook)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week1/mnist_classification_with_stacked_autoencoders_and_softmax_classifier.ipynb)
 
 ## Week2 - Convolutional Neural Networks(CNNs)
