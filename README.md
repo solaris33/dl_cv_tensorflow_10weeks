@@ -39,8 +39,10 @@
 ## Week9 - Semantic Image Segmentation
 - Semantic Image Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week9/FCN.tensorflow)
 
-## Week10 - Brain Tumor Segmentation
+## Week10 - Brain Tumor Segmentation & Object Detection & Reinforcement Learning)
 - Brain Tumor Segmentation - *Fully Convolutional Networks for Semantic Segmentation* Implementation for BRATS Dataset [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/FCN-BRATS)
+- Object Detection [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/object_detection_tutorial_kor.ipynb)
+- Reinforcement Learning - DQN - Simple Catch Game [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/CatchGame-QLearningExample-TensorFlow)
 
 
 # References
