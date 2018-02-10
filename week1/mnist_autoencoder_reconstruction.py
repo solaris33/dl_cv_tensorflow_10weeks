@@ -1,118 +1,83 @@
 # -*- coding: utf-8 -*-
+# AutoEncoder를 이용한 MNIST Reconstruction
 
-#원본URL : https://github.com/aymericdamien/TensorFlow-Examples/blob/master/examples/3_NeuralNetworks/autoencoder.py
-
-""" Auto Encoder Example.
-Using an auto encoder on MNIST handwritten digits.
-References:
-    Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner. "Gradient-based
-    learning applied to document recognition." Proceedings of the IEEE,
-    86(11):2278-2324, November 1998.
-Links:
-    [MNIST Dataset] http://yann.lecun.com/exdb/mnist/
-"""
-from __future__ import division, print_function, absolute_import
+from __future__ import print_function
 
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Import MNIST data
+# MNIST 데이터를 다운로드한다.
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("MNIST_data", one_hot=True)
 
-# Parameters
+# 파라미터들
 learning_rate = 0.01
-training_epochs = 20
-batch_size = 256
+training_epochs = 20    # 반복횟수
+batch_size = 256        # 배치개수
 display_step = 1
 examples_to_show = 10
 
-# Network Parameters
-n_hidden_1 = 256 # 1st layer num features
-n_hidden_2 = 128 # 2nd layer num features
-n_input = 784 # MNIST data input (img shape: 28*28)
+# 네트워크 구조를 정의한다.
+n_hidden_1 = 300 
+n_hidden_2 = 150
+n_input = 784 
 
-# tf Graph input (only pictures)
-X = tf.placeholder("float", [None, n_input])
+# 입력을 받기 위한 플레이스홀더를 정의한다.
+X = tf.placeholder(tf.float32, [None, n_input])
 
-weights = {
-    'encoder_h1': tf.Variable(tf.random_normal([n_input, n_hidden_1])),
-    'encoder_h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
-    'decoder_h1': tf.Variable(tf.random_normal([n_hidden_2, n_hidden_1])),
-    'decoder_h2': tf.Variable(tf.random_normal([n_hidden_1, n_input])),
-}
-biases = {
-    'encoder_b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    'encoder_b2': tf.Variable(tf.random_normal([n_hidden_2])),
-    'decoder_b1': tf.Variable(tf.random_normal([n_hidden_1])),
-    'decoder_b2': tf.Variable(tf.random_normal([n_input])),
-}
+def build_autoencoder(x):
+    # 인코딩(Encoding) - 784 -> 300 -> 150
+    W1 = tf.Variable(tf.random_normal([n_input, n_hidden_1]))
+    b1 = tf.Variable(tf.random_normal([n_hidden_1]))
+    L1 = tf.nn.sigmoid(tf.matmul(x,W1) + b1)
+    W2 = tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2]))
+    b2 = tf.Variable(tf.random_normal([n_hidden_2]))
+    L2 = tf.nn.sigmoid(tf.matmul(L1,W2) + b2)
+    # 디코딩(Decoding) 150 -> 300 -> 784
+    W3 = tf.Variable(tf.random_normal([n_hidden_2, n_hidden_1]))
+    b3 = tf.Variable(tf.random_normal([n_hidden_1]))
+    L3 = tf.nn.sigmoid(tf.matmul(L2,W3) + b3)
+    W4 = tf.Variable(tf.random_normal([n_hidden_1, n_input]))
+    b4 = tf.Variable(tf.random_normal([n_input]))
+    reconstructed_x = tf.nn.sigmoid(tf.matmul(L3,W4) + b4)
 
+    return reconstructed_x
 
-# Building the encoder
-def encoder(x):
-    # Encoder Hidden layer with sigmoid activation #1
-    layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, weights['encoder_h1']),
-                                   biases['encoder_b1']))
-    # Encoder Hidden layer with sigmoid activation #2
-    layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['encoder_h2']),
-                                   biases['encoder_b2']))
-    return layer_2
-
-
-# Building the decoder
-def decoder(x):
-    # Decoder Hidden layer with sigmoid activation #1
-    layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, weights['decoder_h1']),
-                                   biases['decoder_b1']))
-    # Decoder Hidden layer with sigmoid activation #2
-    layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['decoder_h2']),
-                                   biases['decoder_b2']))
-    return layer_2
-
-# Construct model
-encoder_op = encoder(X)
-decoder_op = decoder(encoder_op)
-
-# Prediction
-y_pred = decoder_op
-# Targets (Labels) are the input data.
+# 오토인코더를 그래프 구조를 정의한다.
+y_pred = build_autoencoder(X)
+# 타겟데이터는 인풋데이터와 같다. 
 y_true = X
 
-# Define loss and optimizer, minimize the squared error
-cost = tf.reduce_mean(tf.pow(y_true - y_pred, 2))
-optimizer = tf.train.RMSPropOptimizer(learning_rate).minimize(cost)
+# 손실함수와 옵티마이저를 정의한다.
+loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))
+optimizer = tf.train.RMSPropOptimizer(learning_rate).minimize(loss)
 
-# Initializing the variables
-init = tf.global_variables_initializer()
-
-# Launch the graph
+# 그래프를 실행한다.
 with tf.Session() as sess:
-    sess.run(init)
+    # 변수들의 초기값을 할당한다.
+    sess.run(tf.global_variables_initializer())
     total_batch = int(mnist.train.num_examples/batch_size)
-    # Training cycle
+    # 트레이닝 횟수만큼 학습을 진행한다.
     for epoch in range(training_epochs):
-        # Loop over all batches
+        # 전체 배치에 대해서 학습을 진행한다.
         for i in range(total_batch):
             batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-            # Run optimization op (backprop) and cost op (to get loss value)
-            _, c = sess.run([optimizer, cost], feed_dict={X: batch_xs})
-        # Display logs per epoch step
+            _, c = sess.run([optimizer, loss], feed_dict={X: batch_xs})
+        # 지정된 주기마다 학습 결를를 출력한다.
         if epoch % display_step == 0:
-            print("Epoch:", '%04d' % (epoch+1),
-                  "cost=", "{:.9f}".format(c))
+            print("반복횟수(Epoch) :", '%04d' % (epoch+1),
+                  "손실함수(loss) =", "{:.9f}".format(c))
 
-    print("Optimization Finished!")
+    print("최적화 끝!")
 
-    # Applying encode and decode over test set
-    encode_decode = sess.run(
-        y_pred, feed_dict={X: mnist.test.images[:examples_to_show]})
-    # Compare original images with their reconstructions
+    # 테스트 데이터로 Reconstruction을 수행한다.
+    reconstructed_result = sess.run(y_pred, feed_dict={X: mnist.test.images[:examples_to_show]})
+    # 원본 MNIST 데이터와 Reconstruction 결과를 비교한다.
     f, a = plt.subplots(2, 10, figsize=(10, 2))
     for i in range(examples_to_show):
         a[0][i].imshow(np.reshape(mnist.test.images[i], (28, 28)))
-        a[1][i].imshow(np.reshape(encode_decode[i], (28, 28)))
+        a[1][i].imshow(np.reshape(reconstructed_result[i], (28, 28)))
     f.show()
     plt.draw()
     plt.waitforbuttonpress()

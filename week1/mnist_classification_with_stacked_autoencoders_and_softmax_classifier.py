@@ -15,7 +15,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 
 
-# 파라미터 설정
+# 하이퍼파라미터 설정
 learning_rate_RMSProp = 0.01
 learning_rate_Gradient_Descent = 0.5
 training_epochs = 400     # epoch 횟수 (iteration)
@@ -24,53 +24,55 @@ batch_size = 256
 display_step = 1        # 몇 Step마다 log를 출력할지 결정한다.
 examples_to_show = 10   # reconstruct된 이미지 중 몇개를 보여줄지를 결정한다. 
 n_hidden_1 = 200        # 첫번째 히든레이어의 노드 개수 
-n_hidden_2 = 200        # 두번째 히든레이어의 노드 개수 
+n_hidden_2 = 100        # 두번째 히든레이어의 노드 개수 
 n_input = 784           # MNIST 데이터 input (이미지 크기: 28*28)
 
 
 # Stacked Autoencoder를 생성한다.
-def build_autoencoder():
+def build_autoencoder(x):
     # 히든 레이어 1을 위한 Weights와 Biases
     Wh_1 = tf.Variable(tf.random_normal([n_input, n_hidden_1]))   
     bh_1 = tf.Variable(tf.random_normal([n_hidden_1]))
-    h_1 = tf.nn.sigmoid(tf.matmul(X, Wh_1) +bh_1)     # 히든레이어 1의 activation (sigmoid 함수를 사용)
+    h_1 = tf.nn.sigmoid(tf.matmul(x, Wh_1) +bh_1)     # 히든레이어 1의 activation (sigmoid 함수를 사용)
     # 히든 레이어 2을 위한 Weights와 Biases
     Wh_2 = tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2]))
     bh_2 = tf.Variable(tf.random_normal([n_hidden_2]))
     h_2 = tf.nn.sigmoid(tf.matmul(h_1, Wh_2) +bh_2)   # 히든레이어 2의 activation (sigmoid 함수를 사용)
+    # 히든 레이어 3을 위한 Weights와 Biases
+    Wh_3 = tf.Variable(tf.random_normal([n_hidden_2, n_hidden_1]))
+    bh_3 = tf.Variable(tf.random_normal([n_hidden_1]))
+    h_3 = tf.nn.sigmoid(tf.matmul(h_2, Wh_3) +bh_3)   # 히든레이어 2의 activation (sigmoid 함수를 사용)
     # Output 레이어를 위한 Weights와 Biases
-    Wo = tf.Variable(tf.random_normal([n_hidden_2, n_input]))
+    Wo = tf.Variable(tf.random_normal([n_hidden_1, n_input]))
     bo = tf.Variable(tf.random_normal([n_input]))
-    X_reconstructed = tf.nn.sigmoid(tf.matmul(h_2,Wo) + bo)   # Output 레이어의 activation (sigmoid 함수를 사용)
+    X_reconstructed = tf.nn.sigmoid(tf.matmul(h_3,Wo) + bo)   # Output 레이어의 activation (sigmoid 함수를 사용)
     return X_reconstructed, h_2 
 
 # Softmax Classifier를 생성한다.
-def build_softmax_classifier():
+def build_softmax_classifier(x):
     # Softmax Classifier를 위한 파라미터들
     W = tf.Variable(tf.zeros([n_hidden_2, 10]))
     b = tf.Variable(tf.zeros([10]))
-    y_pred = tf.nn.softmax(tf.matmul(extracted_features, W) + b)      # 예측된 Output : 두번째 히든레이어의 activation output을 input으로 사용한다. 
+    y_pred = tf.nn.softmax(tf.matmul(x, W) + b)      # 예측된 Output : 두번째 히든레이어의 activation output을 input으로 사용한다. 
     return y_pred
 
 
 # 학습에 필요한 변수들 설정
-X = tf.placeholder("float", [None, n_input])    # Input 데이터 설정
-y_pred, extracted_features = build_autoencoder() # Autoencoder의 Reconstruction 결과, 압축된 Features(h_2=200)
+X = tf.placeholder("float", [None, n_input])      # 인풋을 위한 플레이스홀더를 정의합니다.
+y_pred, extracted_features = build_autoencoder(X) # Autoencoder의 Reconstruction 결과, 압축된 Features(h_2=200)
 y_true = X # Output 값(True Output)을 설정(=Input 값)
-y = build_softmax_classifier()                # Predicted Output using Softmax Classifier
-y_ = tf.placeholder(tf.float32, [None, 10])   # True Output
+y = build_softmax_classifier(extracted_features)  # Predicted Output using Softmax Classifier
+y_ = tf.placeholder(tf.float32, [None, 10])       # True MNIST 숫자값
 
 
 # Optimization을 위한 파라미터들
-# Autoencoder Optimization을 위한 파라미터들 
+# 1. Autoencoder Optimization을 위한 파라미터들 
 reconsturction_cost = tf.reduce_mean(tf.pow(y_true - y_pred, 2))     # squared error loss 함수
 initial_optimizer = tf.train.RMSPropOptimizer(learning_rate_RMSProp).minimize(reconsturction_cost)
-
-# Softmax Classifier Optimization을 위한 파라미터들 
+# 2. Softmax Classifier Optimization을 위한 파라미터들 
 cross_entropy_cost = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))     # cross-entropy loss 함수
 softmax_classifier_optimizer = tf.train.GradientDescentOptimizer(learning_rate_Gradient_Descent).minimize(cross_entropy_cost)
-
-# Fine Tuning Optimization을 위한 파라미터들
+# 3. Fine Tuning Optimization을 위한 파라미터들
 finetuning_cost = cross_entropy_cost + reconsturction_cost
 finetuning_optimizer = tf.train.GradientDescentOptimizer(learning_rate_Gradient_Descent).minimize(finetuning_cost)
 
@@ -121,8 +123,8 @@ with tf.Session() as sess:
     print(sess.run(accuracy, feed_dict={X: mnist.test.images, y_: mnist.test.labels}))
 
 
-    # Step 5: Fine-tuning softmax model
-    # Training을 시작한다.
+    # Step 5: Fine-tuning
+    # 지정된 횟수만큼 Training을 시작한다.
     for epoch in range(training_epochs):
        # 모든 배치들을 돌아가면서(Loop) 학습한다.
         for i in range(total_batch):
