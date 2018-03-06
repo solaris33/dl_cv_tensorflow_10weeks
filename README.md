@@ -14,6 +14,7 @@
 
 ## Week3 - Recurrent Neural Networks(RNNs)
 - Character-level Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
+- Character-level Language Modeling using Recurrent Neural Networks(RNNs) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/model.py)
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb)
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb_word_lm_dynamic_rnn.py)
 
