@@ -34,6 +34,7 @@
 ## Week7 - Generative Model - Variational AutoEncoder(VAE) & Generative Adversarial Networks(GAN)
 - Variational AutoEncoder(VAE) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/VAE-TensorFlow)
 - Generative Adversarial Networks(GAN) Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/GAN-TensorFlow)
+- MNIST Data Generation using Generative Adversarial Networks(GAN) :smile: [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week7/mnist_generation_using_gan.py)
 
 ## Week8 - Autopilot
 - Autopilot - *Learning a Driving Simulator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week8/research)
