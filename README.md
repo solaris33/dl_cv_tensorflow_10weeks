@@ -15,8 +15,9 @@
 - Custom Dataset Image Classification using Inception v3 Retraining(Fine-Tuning) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/inception_v3_retraining)
 
 ## Week3 - Recurrent Neural Networks(RNNs)
-- Character-level Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
-- Character-level Language Modeling using Recurrent Neural Networks(RNNs) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/model.py)
+- Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) :smile: [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-simple)
+- Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
+- Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/model.py)
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb)
 - Penn Tree Bank(PTB) Dataset Language Modeling using Recurrent Neural Networks(RNNs) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/ptb_word_lm_dynamic_rnn.py)
 
