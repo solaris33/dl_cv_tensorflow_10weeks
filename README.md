@@ -49,6 +49,8 @@
 - Object Detection [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/object_detection_tutorial_kor.ipynb)
 - Reinforcement Learning - DQN - Simple Catch Game [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week10/CatchGame-QLearningExample-TensorFlow)
 
+## Appendix
+- Word2Vec Example [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/Appendix/word2vec_example.py)
 
 # References
 [1] https://www.tensorflow.org/
