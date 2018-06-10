@@ -1,44 +1,21 @@
 # -*- coding: utf-8 -*-
 
 """Inception v3 architecture 모델을 이용한 간단한 Transfer Learning (TensorBoard 포함)
-This example shows how to take a Inception v3 architecture model trained on
-ImageNet images, and train a new top layer that can recognize other classes of
-images.
-The top layer receives as input a 2048-dimensional vector for each image. We
-train a softmax layer on top of this representation. Assuming the softmax layer
-contains N labels, this corresponds to learning N + 2048*N model parameters
-corresponding to the learned biases and weights.
-Here's an example, which assumes you have a folder containing class-named
-subfolders, each full of images for each label. The example folder flower_photos
-should have a structure like this:
+이 예제는 ImageNet 이미지(=1000개의 label)를 분류하도록 학습된 Inception v3 아키텍쳐에
+우리가 원하는 새로운 이미지(=N개의 label)를 분류하도록 마지막 top layer를 추가해서 retrain하는 법을 보여줍니다.
+마지막 top layer는 2048차원의 vector를 입력받아서 N개의 Label의 분류결과를 출력하는 Softmax 레이어입니다.
+label이 이름인 폴더를 구성하는 방법은 아래와 같습니다.
+예를 들어, flower_photos라는 루트 폴더에 subfolder들을 생성해서 이미지들을 넣는 법은 다음과 같습니다.
 ~/flower_photos/daisy/photo1.jpg
 ~/flower_photos/daisy/photo2.jpg
 ...
 ~/flower_photos/rose/anotherphoto77.jpg
 ...
 ~/flower_photos/sunflower/somepicture.jpg
-The subfolder names are important, since they define what label is applied to
-each image, but the filenames themselves don't matter. Once your images are
-prepared, you can run the training with a command like this:
-```bash
-bazel build tensorflow/examples/image_retraining:retrain && \
-bazel-bin/tensorflow/examples/image_retraining/retrain \
-    --image_dir ~/flower_photos
-```
-Or, if you have a pip installation of tensorflow, `retrain.py` can be run
-without bazel:
-```bash
-python tensorflow/examples/image_retraining/retrain.py \
-    --image_dir ~/flower_photos
-```
-You can replace the image_dir argument with any folder containing subfolders of
-images. The label for each image is taken from the name of the subfolder it's
-in.
-This produces a new model file that can be loaded and run by any TensorFlow
-program, for example the label_image sample code.
-To use with TensorBoard:
-By default, this script will log summaries to /tmp/retrain_logs directory
-Visualize the summaries with this command:
+각각의 subfolder 이름은 중요하지만 subfolder안에 이미지 파일들의 이름은 중요하지 않습니다.
+TensorBoard 로그는 default값으로 /tmp/retrain_logs 경로에 저장됩니다.
+따라서 TensorBoard에서 저장된 summary들을 시각화하고 싶을 경우 아래 명령어를 입력합니다.
+
 tensorboard --logdir /tmp/retrain_logs
 """
 from __future__ import absolute_import
@@ -66,10 +43,9 @@ from tensorflow.python.util import compat
 
 FLAGS = None
 
-# 모든 파라미터들은 특정한 모델 architecture와 묶여(tied) 있다.
-# 우리는 Inception v3를 사용할 것이다. 이는 tensor 이름이나 사이즈들을 포함하고 있다.
-# 만약 당신이 이 스크립트를 다른 모델에 사용하고 싶다면, 
-# 당신이 사용하는 network를 반영하도록 tensor 이름이나 사이즈들을 변경해야만 할 것이다.
+# 모든 파라미터들은 특정한 모델(=Inception v3) architecture와 묶여(tied) 있습니다.
+# 이 스크립트에서는 Inception v3 모델의 tensor 이름이나 사이즈들을 사용합니다.
+# 따라서 만약 이 스크립트를 다른 모델에 사용하고 싶다면 해당 모델에 맞게 tensor 이름이나 사이즈들을 변경해주어야만합니다.
 DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz'
 BOTTLENECK_TENSOR_NAME = 'pool_3/_reshape:0'
 BOTTLENECK_TENSOR_SIZE = 2048
@@ -82,23 +58,23 @@ MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 
 
 def create_image_lists(image_dir, testing_percentage, validation_percentage):
-  """file system으로부터 training 이미지들의 list를 만든다.
-  이미지 디렉토리로부터 sub folder들을 분석하고, 그들을 training, testing, validation sets으로 나눈다.
-  그리고 각각의 label을 위한 이미지 list와 그들의 경로(path)를 나타내는 자료구조(data structure)를 반환한다.
-  인수들(Args):
+  """file system으로부터 training 이미지들의 list를 만듭니다.
+  이미지 디렉토리로부터 sub folder들을 분석하고, 그들을 training, testing, validation sets으로 나눕니다.
+  그리고 각각의 label을 위한 이미지 list와 그들의 경로(path)를 나타내는 자료구조(data structure)를 반환합니다.
+  인자들(Args):
     image_dir: 이미지들의 subfolder들을 포함한 folder의 String path.
     testing_percentage: 전체 이미지중 테스트를 위해 사용되는 비율을 나타내는 Integer.
     validation_percentage: 전체 이미지중 validation을 위해 사용되는 비율을 나타내는 Integer.
   반환값들(Returns):
-    각각의 label subfolder를 위한 enrtry를 포함한 dictionary A dictionary 
-    (각각의 label에서 이미지드릉ㄴ training, testing, validation sets으로 나뉘어져 있다.)
+    각각의 label subfolder를 위한 enrtry를 포함한 dictionary
+    (각각의 label에서 이미지들은 training, testing, validation sets으로 나뉘어져 있습니다.)
   """
   if not gfile.Exists(image_dir):
     print("Image directory '" + image_dir + "' not found.")
     return None
   result = {}
   sub_dirs = [x[0] for x in gfile.Walk(image_dir)]
-  # root directory는 처음에 온다. 따라서 이를 skip한다.
+  # root directory는 처음에 옵니다. 따라서 이를 skip합니다.
   is_root_dir = True
   for sub_dir in sub_dirs:
     if is_root_dir:
@@ -127,14 +103,14 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
     validation_images = []
     for file_name in file_list:
       base_name = os.path.basename(file_name)
-      # 어떤 이미지로 리스트를 만들지 결정할때 파일 이름에 "_nohash_"가 포함되어 있으면 이를 무시할 수 있다.
-      # 이를 이용해서, 데이터셋을 만드는 사람은 서로 비슷한 사진들을 grouping할 수있다.
-      # 예를 들어, plant disease를 데이터셋을 만들기 위해서, 여러 장의 같은 잎사귀(leaf)를 grouping할 수 있다.
+      # 어떤 이미지로 리스트를 만들지 결정할때 파일 이름에 "_nohash_"가 포함되어 있으면 이를 무시할 수 있습니다.
+      # 이를 이용해서, 데이터셋을 만드는 사람은 서로 비슷한 사진들을 grouping 할수 있습니다.
+      # 예를 들어, plant disease 데이터셋을 만들기 위해서, 여러 장의 같은 잎사귀(leaf)를 grouping할 수 있습니다.
       hash_name = re.sub(r'_nohash_.*$', '', file_name)
-      # 이는 일종의 마법처럼 보일 수 있다. 하지만, 우리는 이 파일이 training sets로 갈지, testing sets로 갈지, validation sets로 갈지 결정해야만 한다.
-      # 그리고 우리는 더많은 파일들이 추가되더라도, 같은 set에 이미 존재하는 파일들이 유지되길 원한다.
-      # 그렇게 하기 위해서는, 우리는 파일 이름 그자체로부터 결정하는 안정적인 방법이 있어야만 한다.
-      # 따라서, 우리는 파일 이름을 hash하고, 이를 이를 할당하는데 사용하는 확률을 결정하는데 사용한다.
+      # 이는 일종의 마법처럼 보일 수 있습니다. 하지만, 우리는 이 파일이 training sets로 갈지, testing sets로 갈지, validation sets로 갈지를 결정해야만 합니다.
+      # 그리고 우리는 더많은 파일들이 추가되더라도, 같은 set에 이미 존재하는 파일들이 유지되길 원합니다.
+      # 그렇게 하기 위해서, 우리는 파일 이름 그자체로부터 결정하는 안정적인 방법이 있어야만 합니다.
+      # 이를 위해 우리는 파일 이름을 hash하고, 이를 이를 할당하는데 사용하는 확률을 결정하는데 사용합니다.
       hash_name_hashed = hashlib.sha1(compat.as_bytes(hash_name)).hexdigest()
       percentage_hash = ((int(hash_name_hashed, 16) %
                           (MAX_NUM_IMAGES_PER_CLASS + 1)) *
@@ -155,16 +131,16 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
 
 
 def get_image_path(image_lists, label_name, index, image_dir, category):
-  """"주어진 index에 대한 이미지 경로(path)를 리턴한다.
-  인수들(Args):
+  """"주어진 index에 대한 이미지 경로(path)를 리턴합니다.
+  인자들(Args):
     image_lists: 각각의 label에 대한 training image들의 Dictionary.
     label_name: 우리가 얻고자하는 이미지의 Label string.
-    index: 우리가 얻고자하는 이미지의 Int offset. 이는 레이블에 대한 가능한 이미지의 개수에 따라 moduloed 될 것이다.
-    따라서 임의의 큰값이 될 수도 있다.
+    index: 우리가 얻고자하는 이미지의 Int offset. 이는 레이블에서 가능한 이미지의 개수에 따라 moduloed 될 것입니다.
+    따라서 임의의 큰값이 될 수도 있습니다.
     image_dir: training 이미지들의 subfolder들을 포함하고 있는 Root folder string
     category: training, testing, 또는 validation sets으로부터 이미지에 pull할 Name string
   반환값(Returns):
-    요청된 파라미터들이 만나게 될 이미지에 대한 파일 시스템 경로(file system path) string
+    요청된 파라미터들에 대응되는 이미지에 대한 파일 시스템 경로(file system path) string
   """
   if label_name not in image_lists:
     tf.logging.fatal('Label does not exist %s.', label_name)
@@ -184,17 +160,15 @@ def get_image_path(image_lists, label_name, index, image_dir, category):
 
 def get_bottleneck_path(image_lists, label_name, index, bottleneck_dir,
                         category):
-  """"Returns a path to a bottleneck file for a label at the given index.
-  Args:
-    image_lists: Dictionary of training images for each label.
-    label_name: Label string we want to get an image for.
-    index: Integer offset of the image we want. This will be moduloed by the
-    available number of images for the label, so it can be arbitrarily large.
-    bottleneck_dir: Folder string holding cached files of bottleneck values.
-    category: Name string of set to pull images from - training, testing, or
-    validation.
-  Returns:
-    File system path string to an image that meets the requested parameters.
+  """"주어진 index의 lable에 해당되는 bottleneck 파일의 경로(path)를 리턴합니다.
+  인자들(Args):
+    image_lists: 각각의 label에 해당되는 training 이미지들의 Dictionary
+    label_name: 우리가 얻고자하는 이미지의 Label string
+    index: 우리가 원하는 이미지의 Integer offset. 가능한 이미지의 크기로 moduloed됩니다.
+    bottleneck_dir: bottleneck 파일들이 있는 Folder string
+    category: training, testing, 또는 validation sets으로부터 이미지에 pull할 Name string
+  반환값들(Returns):
+    요청한 파라미터에 대응되는 이미지의 File system path
   """
   return get_image_path(image_lists, label_name, index, bottleneck_dir,
                         category) + '.txt'
@@ -621,7 +595,7 @@ def add_input_distortions(flip_left_right, random_crop, random_scale,
 
 
 def variable_summaries(var):
-  """Attach a lot of summaries to a Tensor (for TensorBoard visualization)."""
+  """TensorBoard 시각화를 위해서 텐서에 summary들을 추가합니다."""
   with tf.name_scope('summaries'):
     mean = tf.reduce_mean(var)
     tf.summary.scalar('mean', mean)
@@ -634,20 +608,14 @@ def variable_summaries(var):
 
 
 def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
-  """Adds a new softmax and fully-connected layer for training.
-  We need to retrain the top layer to identify our new classes, so this function
-  adds the right operations to the graph, along with some variables to hold the
-  weights, and then sets up all the gradients for the backward pass.
-  The set up for the softmax and fully-connected layers is based on:
-  https://tensorflow.org/versions/master/tutorials/mnist/beginners/index.html
-  Args:
-    class_count: Integer of how many categories of things we're trying to
-    recognize.
-    final_tensor_name: Name string for the new final node that produces results.
-    bottleneck_tensor: The output of the main CNN graph.
-  Returns:
-    The tensors for the training and cross entropy results, and tensors for the
-    bottleneck input and ground truth input.
+  """새로운 softmax 레이어를 추가합니다.
+  우리는 우리의 새로운 클래스들을 분류하기 위해서 가장 상단의(top)의 레이어를 retrain할 필요가 있습니다.
+  인자들(Args):
+    class_count: 몇 개의 레이블을 분류할지를 나타내는 Integer
+    final_tensor_name: 새로 추가한 마지막 노드의 이름(Name) string
+    bottleneck_tensor: Pre-Trained CNN 그래프의 출력값
+  반환값들(Returns):
+    training을 위한 연산, 크로스 엔트로피 출력값, bottleneck input과 ground truth input.
   """
   with tf.name_scope('input'):
     bottleneck_input = tf.placeholder_with_default(
@@ -658,8 +626,7 @@ def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
                                         [None, class_count],
                                         name='GroundTruthInput')
 
-  # Organizing the following ops as `final_training_ops` so they're easier
-  # to see in TensorBoard
+  # TensorBoard에서 보기좋게 만들기 위해서 `final_training_ops`라는 이름으로 연산들에 name_scope를 지정합니다.
   layer_name = 'final_training_ops'
   with tf.name_scope(layer_name):
     with tf.name_scope('weights'):
@@ -676,9 +643,11 @@ def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
       logits = tf.matmul(bottleneck_input, layer_weights) + layer_biases
       tf.summary.histogram('pre_activations', logits)
 
+  # 새로 추가한 Softmax 레이어의 출력값을 계산합니다.
   final_tensor = tf.nn.softmax(logits, name=final_tensor_name)
   tf.summary.histogram('activations', final_tensor)
 
+  # 크로스 엔트로피 손실함수를 정의합니다.
   with tf.name_scope('cross_entropy'):
     cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
         labels=ground_truth_input, logits=logits)
@@ -686,6 +655,7 @@ def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
       cross_entropy_mean = tf.reduce_mean(cross_entropy)
   tf.summary.scalar('cross_entropy', cross_entropy_mean)
 
+  # 옵티마이저를 정의하고, 파라미터를 업데이트하는 train_step 연산을 정의합니다.
   with tf.name_scope('train'):
     optimizer = tf.train.GradientDescentOptimizer(FLAGS.learning_rate)
     train_step = optimizer.minimize(cross_entropy_mean)
@@ -695,13 +665,12 @@ def add_final_training_ops(class_count, final_tensor_name, bottleneck_tensor):
 
 
 def add_evaluation_step(result_tensor, ground_truth_tensor):
-  """Inserts the operations we need to evaluate the accuracy of our results.
-  Args:
-    result_tensor: The new final node that produces results.
-    ground_truth_tensor: The node we feed ground truth data
-    into.
-  Returns:
-    Tuple of (evaluation step, prediction).
+  """결과값의 정확도(accuracy)를 측정하기 위한 연산들을 정의합니다.
+  인자들(Args):
+    result_tensor: 예측 결과값을 출력하는 새로 추가한 마지막 노드(final node)
+    ground_truth_tensor: feed하는 ground truth data
+  반환값들(Returns):
+    (evaluation step, prediction) 쌍(tuple).
   """
   with tf.name_scope('accuracy'):
     with tf.name_scope('correct_prediction'):
@@ -715,17 +684,17 @@ def add_evaluation_step(result_tensor, ground_truth_tensor):
 
 
 def main(_):
-  # TensorBoard의 summaries를 write할 directory를 설정한다.
+  # TensorBoard의 summary들을 write할 directory를 설정합니다.
   if tf.gfile.Exists(FLAGS.summaries_dir):
     tf.gfile.DeleteRecursively(FLAGS.summaries_dir)
   tf.gfile.MakeDirs(FLAGS.summaries_dir)
 
-  # pre-trained graph를 생성한다.
+  # Pre-Trained 파라미터를 이용해서 graph를 생성합니다.
   maybe_download_and_extract()
   graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (
       create_inception_graph())
 
-  # 폴더 구조를 살펴보고, 모든 이미지에 대한 lists를 생성한다.
+  # 폴더 구조를 살펴보고, 모든 이미지에 대한 lists를 생성합니다.
   image_lists = create_image_lists(FLAGS.image_dir, FLAGS.testing_percentage,
                                    FLAGS.validation_percentage)
   class_count = len(image_lists.keys())
@@ -737,37 +706,39 @@ def main(_):
           ' - multiple classes are needed for classification.')
     return -1
 
-  # 커맨드라인 flag에 distortion에 관련된 설정이 있으면 distortion들을 적용한다.
+  # distortion에 관련된 설정이 있으면 distortion들을 적용합니다.
   do_distort_images = should_distort_images(
       FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale,
       FLAGS.random_brightness)
 
+  # 세션을 열어서 학습을 진행합니다.
   with tf.Session(graph=graph) as sess:
 
     if do_distort_images:
-      # 우리는 distortion들을 적용할것이다. 따라서 필요한 연산들(operations)을 설정한다.
+      # do_distort_images 플래그가 True이면 distortion들을 적용합니다. 따라서 distortion에 필요한 연산들(operations)을 설정합니다.
       (distorted_jpeg_data_tensor,
        distorted_image_tensor) = add_input_distortions(
            FLAGS.flip_left_right, FLAGS.random_crop,
            FLAGS.random_scale, FLAGS.random_brightness)
     else:
-      # 우리는 계산된 'bottleneck' 이미지 summaries를 가지고 있다. 
-      # 이를 disk에 캐싱(caching)할 것이다. 
+      # 우리는 계산된 'bottleneck' 이미지 정보들을 가지고 있습니다.
+      # 이를 disk에 caching합니다. 
       cache_bottlenecks(sess, image_lists, FLAGS.image_dir,
                         FLAGS.bottleneck_dir, jpeg_data_tensor,
                         bottleneck_tensor)
 
-    # 우리가 학습시킬(training) 새로운 layer를 추가한다.
+    # Pre-Trained Inception 모델에 우리가 training할 새로운 Softmax Layer를 추가합니다.
     (train_step, cross_entropy, bottleneck_input, ground_truth_input,
      final_tensor) = add_final_training_ops(len(image_lists.keys()),
                                             FLAGS.final_tensor_name,
                                             bottleneck_tensor)
 
-    # 우리의 새로운 layer의 정확도를 평가(evalute)하기 위한 새로운 operation들을 생성한다.
+    # 모델의 정확도를 평가하기 위한 operation들을 선언합니다.
     evaluation_step, prediction = add_evaluation_step(
         final_tensor, ground_truth_input)
 
-    # 모든 summaries를 합치고(merge) summaries_dir에 쓴다.(write)
+    # 모든 summary들을 하나로 합치고(merge) summaries_dir 경로에서
+    # training에 관련된 요약로그들은 train 폴더에, validation에 관련된 요약로그들은 validation 폴더에 write합니다.
     merged = tf.summary.merge_all()
     train_writer = tf.summary.FileWriter(FLAGS.summaries_dir + '/train',
                                          sess.graph)
@@ -775,14 +746,15 @@ def main(_):
     validation_writer = tf.summary.FileWriter(
         FLAGS.summaries_dir + '/validation')
 
-    # 우리의 모든 가중치들(weights)과 그들의 초기값들을 설정한다.
+    # 모든 변수들에 초기값을 할당합니다.
     init = tf.global_variables_initializer()
     sess.run(init)
 
-    # 커맨드 라인에서 지정한 횟수만큼 학습을 진행한다.
+    # 지정된 횟수만큼 학습을 진행합니다.
     for i in range(FLAGS.how_many_training_steps):
-      # bottleneck 값들의 batch를 얻는다. 이는 매번 distortion을 적용하고 계산하거나,
-      # disk에 저장된 chache로부터 얻을 수 있다.
+      # bottleneck batch를 설정합니다. 
+      # do_distort_images 플래그가 True라면 distortion을 적용한뒤 batch를 구성하고,
+      # False라면 disk에 저장된 chache로부터 batch를 구성합니다.
       if do_distort_images:
         (train_bottlenecks,
          train_ground_truth) = get_random_distorted_bottlenecks(
@@ -795,8 +767,8 @@ def main(_):
              sess, image_lists, FLAGS.train_batch_size, 'training',
              FLAGS.bottleneck_dir, FLAGS.image_dir, jpeg_data_tensor,
              bottleneck_tensor)
-      # grpah에 bottleneck과 ground truth를 feed하고, training step을 진행한다.
-      # TensorBoard를 위한 'merged' op을 이용해서 training summaries을 capture한다.
+      # training bottleneck(인풋데이터)과 ground truth(타겟데이터)를 feed해서 파라미터를 한스텝 업데이트합니다.
+      # TensorBoard를 위한 merged 연산을 실행하고 training 요약로그들을 저장합니다.
 
       train_summary, _ = sess.run(
           [merged, train_step],
@@ -804,7 +776,7 @@ def main(_):
                      ground_truth_input: train_ground_truth})
       train_writer.add_summary(train_summary, i)
 
-      # 일정 step마다 graph의 training이 얼마나 잘 되고 있는지 출력한다.
+      # 일정 step마다 training이 잘되고있는지 정확도와 손실함수값을 출력합니다.
       is_last_step = (i + 1 == FLAGS.how_many_training_steps)
       if (i % FLAGS.eval_step_interval) == 0 or is_last_step:
         train_accuracy, cross_entropy_value = sess.run(
@@ -820,8 +792,7 @@ def main(_):
                 sess, image_lists, FLAGS.validation_batch_size, 'validation',
                 FLAGS.bottleneck_dir, FLAGS.image_dir, jpeg_data_tensor,
                 bottleneck_tensor))
-        # validation step을 진행한다.
-        # TensorBoard를 위한 'merged' op을 이용해서 training summaries을 capture한다.
+        # validation bottleneck(인풋데이터)과 ground truth(타겟데이터)를 feed해서 학습결과를 출력합니다.
         validation_summary, validation_accuracy = sess.run(
             [merged, evaluation_step],
             feed_dict={bottleneck_input: validation_bottlenecks,
@@ -831,8 +802,8 @@ def main(_):
               (datetime.now(), i, validation_accuracy * 100,
                len(validation_bottlenecks)))
 
-    # 트레이닝 과정이 모두 끝났다.
-    # 따라서 이전에 보지 못했던 이미지를 통해 마지막 test 평가(evalution)을 진행한다.
+    # 이제 트레이닝 과정이 모두 끝났습니다.
+    # 따라서 이전에 보지 못했던 이미지를 통해서 test를 진행합니다.
     test_bottlenecks, test_ground_truth, test_filenames = (
         get_random_cached_bottlenecks(sess, image_lists, FLAGS.test_batch_size,
                                       'testing', FLAGS.bottleneck_dir,
@@ -852,7 +823,7 @@ def main(_):
           print('%70s  %s' % (test_filename,
                               list(image_lists.keys())[predictions[i]]))
 
-    # 학습된 graph와 weights들을 포함한 labels를 쓴다.(write)
+    # 학습된 그래프 파라미터들과 학습에 사용한 label들을 저장합니다.
     output_graph_def = graph_util.convert_variables_to_constants(
         sess, graph.as_graph_def(), [FLAGS.final_tensor_name])
     with gfile.FastGFile(FLAGS.output_graph, 'wb') as f:
@@ -862,6 +833,7 @@ def main(_):
 
 
 if __name__ == '__main__':
+  # 학습에 필요한 설정값들을 지정합니다.
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--image_dir',

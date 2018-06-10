@@ -11,13 +11,13 @@ https://stackoverflow.com/questions/40994583/how-to-implement-tensorflows-next-b
 import tensorflow as tf
 import numpy as np
 
-# CIFAR-10 데이터를 다운로드 받기 위한 helpder 모듈인 load_data 모듈을 임포트합니다.
+# CIFAR-10 데이터를 다운로드 받기 위한 keras의 helper 함수인 load_data 함수를 임포트합니다.
 from tensorflow.python.keras._impl.keras.datasets.cifar10 import load_data
 
 # 다음 배치를 읽어오기 위한 next_batch 유틸리티 함수를 정의합니다.
 def next_batch(num, data, labels):
     '''
-    Return a total of `num` random samples and labels. 
+    `num` 개수 만큼의 랜덤한 샘플들과 레이블들을 리턴합니다.
     '''
     idx = np.arange(0 , len(data))
     np.random.shuffle(idx)
@@ -29,17 +29,10 @@ def next_batch(num, data, labels):
 
 # CNN 모델을 정의합니다. 
 def build_CNN_classifier(x):
-  """CIFAR-10 이미지를 분류하기 위한 Convolutional Neural Networks 그래프를 생성합니다.
-  인자들(Args):
-    x: (N_examples, 32, 32, 3) 차원을 가진 input tensor, CIFAR-10 데이터는 32x32 크기의 컬러이미지이다.
-  리턴값들(Returns):
-    tuple (y, keep_prob). y는 (N_examples, 10)형태의 숫자(0-9) tensor이다. 
-    keep_prob는 dropout을 위한 scalar placeholder이다.
-  """
   # 입력 이미지
   x_image = x
 
-  # 첫번째 convolutional layer - 하나의 grayscale 이미지를 64개의 특징들(feature)으로 맵핑(maping)한다.
+  # 첫번째 convolutional layer - 하나의 grayscale 이미지를 64개의 특징들(feature)으로 맵핑(maping)합니다.
   W_conv1 = tf.Variable(tf.truncated_normal(shape=[5, 5, 3, 64], stddev=5e-2))
   b_conv1 = tf.Variable(tf.constant(0.1, shape=[64]))
   h_conv1 = tf.nn.relu(tf.nn.conv2d(x_image, W_conv1, strides=[1, 1, 1, 1], padding='SAME') + b_conv1)
@@ -47,7 +40,7 @@ def build_CNN_classifier(x):
   # 첫번째 Pooling layer
   h_pool1 = tf.nn.max_pool(h_conv1, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
 
-  # 두번째 convolutional layer -- 32개의 특징들(feature)을 64개의 특징들(feature)로 맵핑(maping)한다.
+  # 두번째 convolutional layer -- 32개의 특징들(feature)을 64개의 특징들(feature)로 맵핑(maping)합니다.
   W_conv2 = tf.Variable(tf.truncated_normal(shape=[5, 5, 64, 64], stddev=5e-2))
   b_conv2 = tf.Variable(tf.constant(0.1, shape=[64]))
   h_conv2 = tf.nn.relu(tf.nn.conv2d(h_pool1, W_conv2, strides=[1, 1, 1, 1], padding='SAME') + b_conv2)
@@ -70,18 +63,18 @@ def build_CNN_classifier(x):
   b_conv5 = tf.Variable(tf.constant(0.1, shape=[128]))
   h_conv5 = tf.nn.relu(tf.nn.conv2d(h_conv4, W_conv5, strides=[1, 1, 1, 1], padding='SAME') + b_conv5)
 
-  # Fully Connected Layer 1 -- 2번의 downsampling 이후에, 우리의 32x32 이미지는 8x8x128 특징맵(feature map)이 된다.
-  # 이를 384개의 특징들로 맵핑(maping)한다.
+  # Fully Connected Layer 1 -- 2번의 downsampling 이후에, 우리의 32x32 이미지는 8x8x128 특징맵(feature map)이 됩니다.
+  # 이를 384개의 특징들로 맵핑(maping)합니다.
   W_fc1 = tf.Variable(tf.truncated_normal(shape=[8 * 8 * 128, 384], stddev=5e-2))
   b_fc1 = tf.Variable(tf.constant(0.1, shape=[384]))
 
   h_conv5_flat = tf.reshape(h_conv5, [-1, 8*8*128])
   h_fc1 = tf.nn.relu(tf.matmul(h_conv5_flat, W_fc1) + b_fc1)
 
-  # Dropout - 모델의 복잡도를 컨트롤한다. 특징들의 co-adaptation을 방지한다.
+  # Dropout - 모델의 복잡도를 컨트롤합니다. 특징들의 co-adaptation을 방지합니다.
   h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob) 
 
-  # 384개의 특징들(feature)을 10개의 클래스-airplane, automobile, bird...-로 맵핑(maping)한다.
+  # 384개의 특징들(feature)을 10개의 클래스-airplane, automobile, bird...-로 맵핑(maping)합니다.
   W_fc2 = tf.Variable(tf.truncated_normal(shape=[384, 10], stddev=5e-2))
   b_fc2 = tf.Variable(tf.constant(0.1, shape=[10]))
   logits = tf.matmul(h_fc1_drop,W_fc2) + b_fc2
@@ -126,7 +119,7 @@ with tf.Session() as sess:
       loss_print = loss.eval(feed_dict={x: batch[0], y: batch[1], keep_prob: 1.0})
 
       print("반복(Epoch): %d, 트레이닝 데이터 정확도: %f, 손실 함수(loss): %f" % (i, train_accuracy, loss_print))
-    # 20% 확률의 Dropout을 이용해서 학습을 진행한다.
+    # 20% 확률의 Dropout을 이용해서 학습을 진행합니다.
     sess.run(train_step, feed_dict={x: batch[0], y: batch[1], keep_prob: 0.8})
 
   # 학습이 끝나면 테스트 데이터에 대한 정확도를 출력합니다.  
