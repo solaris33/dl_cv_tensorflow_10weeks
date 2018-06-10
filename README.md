@@ -14,6 +14,8 @@
 - Custom Dataset Image Classification using Inception v3 Retraining(Fine-Tuning) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/inception_v3_retraining)
 
 ## Week3 - Recurrent Neural Networks(RNNs)
+- Embedding Example [(Code)] (https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/embedding_example.py)
+- Gradient Clipping Example [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/linear_regression_with_gradient_clipping.py)
 - Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) :smile: [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-simple)
 - Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/char-rnn-tensorflow)
 - Character-level Language Modeling using Recurrent Neural Networks(RNNs) (Char-RNN) using tf.nn.dynamic_rnn [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week3/model.py)
