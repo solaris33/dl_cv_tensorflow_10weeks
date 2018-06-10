@@ -12,7 +12,7 @@ mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 # 학습에 필요한 설정값들을 정의합니다.
 learning_rate_RMSProp = 0.02
 learning_rate_GradientDescent = 0.5
-num_epochs = 100       	  # 반복횟수
+num_epochs = 100          # 반복횟수
 batch_size = 256          
 display_step = 1          # 몇 Step마다 log를 출력할지 결정한다.
 input_size = 784          # MNIST 데이터 input (이미지 크기: 28*28)
@@ -58,7 +58,7 @@ y_pred_softmax = build_softmax_classifier(extracted_features)
 
 
 # 1. Pre-Training : MNIST 데이터 재구축을 목적으로하는 손실함수와 옵티마이저를 정의합니다.
-pretraining_loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))     # squared error 함수
+pretraining_loss = tf.reduce_mean(tf.pow(y_true - y_pred, 2))     # MSE 손실 함수
 pretraining_train_step = tf.train.RMSPropOptimizer(learning_rate_RMSProp).minimize(pretraining_loss)
 # 2. Fine-Tuning :  MNIST 데이터 분류를 목적으로하는 손실함수와 옵티마이저를 정의합니다.
 finetuning_loss = tf.reduce_mean(-tf.reduce_sum(y * tf.log(y_pred_softmax), reduction_indices=[1]))     # cross-entropy loss 함수
