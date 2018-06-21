@@ -9,6 +9,7 @@
 
 ## Week2 - Convolutional Neural Networks(CNNs)
 - MNIST Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week2/mnist_classification_with_convolutional_neural_networks.py)
+- MNIST Classification using Convolutional Neural Networks(CNNs) with tf.train.Saver() [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/blob/master/week2/tf_train_saver/mnist_classification_using_cnn_with_tfsaver.py)
 - CIFAR-10 Image Classification using Convolutional Neural Networks(CNNs) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/cifar10)
 - CIFAR-10 Image Classification using Convolutional Neural Networks(CNNs) :smile: [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/cifar10_classification_using_cnn.py)
 - Custom Dataset Image Classification using Inception v3 Retraining(Fine-Tuning) [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week2/inception_v3_retraining)
