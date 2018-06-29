@@ -19,8 +19,7 @@ tf.flags.DEFINE_string('mode', "train", "Mode train/ test/ valid_visualize/ test
 
 MODEL_URL = 'http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat'
 
-#MAX_ITERATION = int(1e5 + 1)
-MAX_ITERATION = int(10000 + 1)
+MAX_ITERATION = int(1e5 + 1)
 NUM_OF_CLASSESS = 5
 IMAGE_SIZE = 224
 
