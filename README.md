@@ -26,6 +26,7 @@
 ## Week4 - Natural Language Processing(NLP) QA & Visual QA
 - NLP QA - *End-To-End Memory Networks* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/MemNN)
 - Visual QA - *Exploring Models and Data for Image Question Answering* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow)
+- Visual QA - *Exploring Models and Data for Image Question Answering* Implementation using tf.nn.dynamic_rnn :smile: [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week4/neural-vqa-tensorflow-refactored)
 
 ## Week5 - Image Captioning
 - Image Captioning - *Show and Tell: A Neural Image Caption Generator* Implementation [(Code)](https://github.com/solaris33/dl_cv_tensorflow_10weeks/tree/master/week5/im2txt)
